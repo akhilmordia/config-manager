@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import { options } from "./utils/grpc";
-import { ConfigService } from "./Services/ConfigService";
+import { ConfigService } from "./services/ConfigService";
 
 dotenv.config();
 const PROTO_PATH = process.env.CONFIG_PROTO_PATH;
