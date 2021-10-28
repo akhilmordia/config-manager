@@ -1,0 +1,34 @@
+{
+  "name": "config-manager",
+  "version": "0.0.1",
+  "description": "A lightweight, language agnostic config manager.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "tsc": "tsc",
+    "build": "eslint . --ext .ts && tsc",
+    "start": "node build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhilmordia/config-manager.git"
+  },
+  "author": "Akhil Mordia",
+  "license": "MIT License",
+  "bugs": {
+    "url": "https://github.com/akhilmordia/config-manager/issues"
+  },
+  "homepage": "https://github.com/akhilmordia/config-manager#readme",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.3.7",
+    "@grpc/proto-loader": "^0.6.5",
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
+    "@typescript-eslint/parser": "^5.2.0",
+    "eslint": "^8.1.0",
+    "jest": "^27.3.1",
+    "typescript": "^4.4.4"
+  }
+}
