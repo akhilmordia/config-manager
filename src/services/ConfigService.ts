@@ -1,8 +1,8 @@
 import { runSQL } from "../drivers/mysql";
 import { Environment, Version } from "../types/entities";
 import { grpcBasicFunction } from "../utils/grpc";
-// import merge from "../utils/mergeObject";
 import { merge } from "lodash";
+//todo: do we need lodash? evaluate using spread only.
 
 type ConfigQueryParam = {
     appId: string;
@@ -11,62 +11,39 @@ type ConfigQueryParam = {
     key: string;
 };
 
-export class ConfigService {
-    // constructor() {
-    //
-    // }
+class _ConfigService {
+    constructor() {}
 
-    @grpcBasicFunction()
     async Get(params: ConfigQueryParam) {
         const { appId, env, version, key } = params;
-        console.log({ appId, env, version, key });
-
-        const mergedVersionConfig = await ConfigService.getVersionConfig({
+        const mergedVersionConfig = await this.getVersionConfig({
             env,
             version,
         });
-
-        const mergedEvironmentConfig = await ConfigService.getEnivronmentConfig(
-            {
-                appId,
-                environmentName: env,
-            }
-        );
-
-        const config = merge(mergedEvironmentConfig, mergedVersionConfig);
-
-        console.log("config", {
-            mergedEvironmentConfig,
-            mergedVersionConfig,
-            config,
-            val: config[key],
+        const mergedEnvironmentConfig = await this.getEnvironmentConfig({
+            appId,
+            environmentName: env,
         });
-        return { value: "config[key]" };
+        const config = merge(mergedEnvironmentConfig, mergedVersionConfig);
+        return config[key];
     }
 
-    static async getVersionConfig({
-        env,
-        version,
-    }: {
-        env: string;
-        version: string;
-    }) {
+    //todo: make this part of the driver interface and get this from driver.
+    async getVersionConfig({ env, version }: { env: string; version: string }) {
         const versions = await runSQL<Version[]>({
             sql: `SELECT versions.* FROM versions
             INNER JOIN environments ON environments.id = versions.environmentId AND environments.name = ?
             WHERE versions.name = ? LIMIT 1`,
             queryParams: [env, version],
         });
-        console.log("versions", versions);
 
         const versionData = versions.length ? versions[0] : null;
         const versionConfig = JSON.parse(versionData?.config || null);
-
-        console.log({ versionConfig });
         return versionConfig;
     }
 
-    static async getEnivronmentConfig({
+    //todo: make this part of the driver interface and get this from driver.
+    async getEnvironmentConfig({
         appId,
         environmentName,
     }: {
@@ -77,12 +54,24 @@ export class ConfigService {
             sql: "SELECT * FROM environments WHERE appId = ? AND name = ?",
             queryParams: [appId, environmentName],
         });
-        console.log("environments", environments);
 
         const environment = environments.length ? environments[0] : null;
         const defaultEnvironmentConfig = JSON.parse(
             environment?.defaultConfig || null
         );
         return defaultEnvironmentConfig;
+    }
+}
+
+//todo: update directory structure
+export class ConfigService {
+    static service = new _ConfigService();
+
+    constructor() {}
+
+    @grpcBasicFunction()
+    async Get(params: ConfigQueryParam) {
+        const response = await ConfigService.service.Get(params);
+        return { value: JSON.stringify(response) };
     }
 }
