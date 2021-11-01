@@ -22,9 +22,13 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.3.7",
     "@grpc/proto-loader": "^0.6.5",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "lodash": "4.17.21",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.176",
+    "@types/mysql": "^2.15.19",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "@typescript-eslint/parser": "^5.2.0",
     "eslint": "^8.1.0",
