@@ -11,11 +11,20 @@ type ConfigQueryParam = {
     key: string;
 };
 
+const keyMaker = (p: ConfigQueryParam): string =>
+    p.appId + "_" + p.env + "_" + p.version;
+
+let allConfigs = new Map();
+
 class _ConfigService {
     constructor() {}
 
     async Get(params: ConfigQueryParam) {
         const { appId, env, version, key } = params;
+        if (allConfigs.has(keyMaker(params))) {
+            console.log("cache hit for key: " + key);
+            return allConfigs.get(keyMaker(params)).get(key);
+        }
         const mergedVersionConfig = await this.getVersionConfig({
             env,
             version,
@@ -25,6 +34,7 @@ class _ConfigService {
             environmentName: env,
         });
         const config = merge(mergedEnvironmentConfig, mergedVersionConfig);
+        allConfigs.set(keyMaker(params), new Map(Object.entries(config)));
         return config[key];
     }
 
