@@ -85,3 +85,9 @@ export class ConfigService {
         return { value: JSON.stringify(response) };
     }
 }
+
+/*todo: cron to check updatedAt for all loaded configs
+ * input allConfigs
+ * output updatedAt from table for all default and version level configs
+ * if updatedAt is different (newer), delete it from allConfigs
+ * */
