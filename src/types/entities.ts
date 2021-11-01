@@ -13,3 +13,11 @@ export type Version = {
     config: string;
     updatedAt: Date;
 };
+
+export type EnvironmentJoinVersion = {
+    appId: number;
+    environmentName: number;
+    version: string;
+    versionsUpdatedAt: Date;
+    envUpdatedAt: Date;
+};
