@@ -60,7 +60,7 @@ class _ConfigService {
     async Get(params: ConfigQueryParam) {
         const { appId, env, version, key } = params;
         if (allConfigs.has(keyMaker(params))) {
-            console.log("cache hit for key: " + key);
+            // console.log("cache hit for key: " + key);
             return allConfigs.get(keyMaker(params)).get(key);
         }
         const mergedVersionConfig = await this.getVersionConfig({
