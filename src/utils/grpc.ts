@@ -19,9 +19,9 @@ export const grpcBasicFunction =
     () =>
     (target: object, propertyKey: string, descriptor: PropertyDescriptor) => {
         const fn = descriptor.value;
-        descriptor.value = (params: Params, callback: GrpcCallback) => {
+        descriptor.value = async (params: Params, callback: GrpcCallback) => {
             try {
-                callback(null, fn(params.request));
+                callback(null, await fn(params.request));
             } catch (e) {
                 callback({
                     code: grpc.status.UNKNOWN,
