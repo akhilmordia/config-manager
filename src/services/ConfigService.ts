@@ -6,6 +6,7 @@ import {
 } from "../types/entities";
 import { grpcBasicFunction } from "../utils/grpc";
 import { merge } from "lodash";
+
 const cron = require("node-cron");
 //todo: do we need lodash? evaluate using spread only.
 
@@ -131,12 +132,7 @@ export class ConfigService {
     }
 }
 
-/*todo: cron to check updatedAt for all loaded configs
- * input allConfigs
- * output updatedAt from table for all default and version level configs
- * if updatedAt is different (newer), delete it from allConfigs
- * */
-
+//todo: update directory structure
 cron.schedule("*/10 * * * * *", async () => {
     try {
         let data = await getConfigFromDb();
@@ -149,12 +145,21 @@ cron.schedule("*/10 * * * * *", async () => {
             });
             let configData = allConfigs.get(key);
 
-            let configEnvUpdatedAt = new Date(configData.get("envUpdatedAt")).getTime();
-            let configVersionsUpdatedAt = new Date(configData.get("versionsUpdatedAt")).getTime();
+            let configEnvUpdatedAt = new Date(
+                configData.get("envUpdatedAt")
+            ).getTime();
+            let configVersionsUpdatedAt = new Date(
+                configData.get("versionsUpdatedAt")
+            ).getTime();
             let dbEnvUpdatedAt = new Date(data[index].envUpdatedAt).getTime();
-            let dbVersionsUpdatedAt = new Date(data[index].versionsUpdatedAt).getTime();
+            let dbVersionsUpdatedAt = new Date(
+                data[index].versionsUpdatedAt
+            ).getTime();
 
-            if (configEnvUpdatedAt != dbEnvUpdatedAt || configVersionsUpdatedAt != dbVersionsUpdatedAt) {
+            if (
+                configEnvUpdatedAt != dbEnvUpdatedAt ||
+                configVersionsUpdatedAt != dbVersionsUpdatedAt
+            ) {
                 console.log("delete key", key);
                 allConfigs.delete(key);
             }

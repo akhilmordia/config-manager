@@ -1,29 +1,6 @@
 import mysql, { QueryOptions } from "mysql";
 
-// dotenv.config();
-
-// const connection = mysql.createConnection({
-//   host     : 'localhost',
-//   user     : 'me',
-//   password : 'secret',
-//   database : 'my_db'
-// });
-
-// connection.connect();
-// connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
-//   if (error) throw error;
-//   console.log('The solution is: ', results[0].solution);
-// });
-
-var pool = mysql.createPool({
-    connectionLimit: +process.env.CONNECTION_LIMIT || 10,
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-});
-
-console.log({
+const pool = mysql.createPool({
     connectionLimit: +process.env.CONNECTION_LIMIT || 10,
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
