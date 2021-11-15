@@ -15,19 +15,17 @@ export const options = {
     oneofs: true,
 };
 
-export const grpcBasicFunction =
-    () =>
-    (target: object, propertyKey: string, descriptor: PropertyDescriptor) => {
-        const fn = descriptor.value;
-        descriptor.value = async (params: Params, callback: GrpcCallback) => {
-            try {
-                callback(null, await fn(params.request));
-            } catch (e) {
-                callback({
-                    code: grpc.status.UNKNOWN,
-                    message: e.message,
-                });
-            }
-        };
-        return descriptor;
+export const grpcBasicFunction = () => (target: object, propertyKey: string, descriptor: PropertyDescriptor) => {
+    const fn = descriptor.value;
+    descriptor.value = async (params: Params, callback: GrpcCallback) => {
+        try {
+            callback(null, await fn(params.request));
+        } catch (e) {
+            callback({
+                code: grpc.status.UNKNOWN,
+                message: e.message,
+            });
+        }
     };
+    return descriptor;
+};
