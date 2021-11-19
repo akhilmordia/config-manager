@@ -15,9 +15,13 @@ export class BaseConfigDriver {
         return { appId: keys[0], env: keys[1], version: keys[2] };
     };
 
-    async getEnvironmentDefaultConfig(appId: string, environmentName: string) {}
+    async getEnvironmentDefaultConfig(appId: string, environmentName: string) {
+        console.log(appId + environmentName);
+    }
 
-    async getVersionConfig(env: string, version: string) {}
+    async getVersionConfig(env: string, version: string) {
+        console.log(env + version);
+    }
 
     async getAllConfigs(): Promise<EnvironmentJoinVersion[]> {
         return [];
