@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  python-client:
+    build: .
+    volumes:
+      - ./:/app
+      - ${CONFIG_PROTO_PATH}:/proto-files/ConfigStore/config.proto
+    working_dir: /app
+    environment:
+      - CONFIG_PROTO_PATH=/proto-files/ConfigStore/config.proto
+    network_mode: host
+    command: >
+      sh -c "
+        python -m grpc_tools.protoc --proto_path=/proto-files/ConfigStore config.proto --python_out=. --grpc_python_out=.
+        python configClient.py
+      "

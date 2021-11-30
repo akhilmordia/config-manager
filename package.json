@@ -8,7 +8,8 @@
     "tsc": "tsc",
     "build": "eslint . --ext .ts --fix && tsc",
     "start": "node build/index.js",
-    "dev": "docker-compose -f ./docker/docker-compose.yml --env-file .env up"
+    "dev": "docker-compose -f ./docker/docker-compose.yml --env-file .env up",
+    "pythonExample": "docker-compose -f ./src/examples/python/docker-compose.yml --env-file .env up --build --remove-orphans"
   },
   "repository": {
     "type": "git",
