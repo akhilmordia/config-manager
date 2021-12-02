@@ -7,7 +7,7 @@
     "test": "jest",
     "tsc": "tsc",
     "build": "eslint . --ext .ts --fix && tsc",
-    "start": "node build/index.js",
+    "start": "docker-compose -f ./docker/docker-compose.yml --env-file .env up --build --remove-orphans nodemon",
     "dev": "docker-compose -f ./docker/docker-compose.yml --env-file .env up",
     "pythonExample": "docker-compose -f ./src/examples/python/docker-compose.yml --env-file .env up --build --remove-orphans"
   },
