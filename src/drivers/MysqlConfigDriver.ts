@@ -46,22 +46,21 @@ export class MySQLConfigDriver extends BaseConfigDriver {
         });
     }
 
-    async getVersionConfig(env: string, version: string) {
+    async getVersionConfig(appId: string, env: string, version: string) {
         const versions = await this.runSQL<Version[]>({
             sql: `SELECT versions.id, versions.environmentId, versions.name, versions.config, versions.updatedAt 
             FROM versions
             INNER JOIN environments 
-            ON environments.id = versions.environmentId AND environments.name = ?
-            WHERE versions.name = ? LIMIT 1`,
-            queryParams: [env, version],
+            ON environments.id = versions.environmentId
+            WHERE environments.appId = ? AND environments.name = ? AND versions.name = ? LIMIT 1`,
+            queryParams: [appId, env, version],
         });
 
         const versionData = versions.length ? versions[0] : null;
-        const versionConfig = {
+        return {
             ...JSON.parse(versionData?.config || "{}"),
             versionsUpdatedAt: versionData.updatedAt,
         };
-        return versionConfig;
     }
 
     async getEnvironmentDefaultConfig(appId: string, environmentName: string) {
@@ -71,12 +70,10 @@ export class MySQLConfigDriver extends BaseConfigDriver {
         });
 
         const environment = environments.length ? environments[0] : null;
-        const defaultEnvironmentConfig = {
+        return {
             ...JSON.parse(environment?.defaultConfig || "{}"),
             envUpdatedAt: environment.updatedAt,
         };
-
-        return defaultEnvironmentConfig;
     }
 
     async getAllConfigs() {
@@ -95,7 +92,7 @@ export class MySQLConfigDriver extends BaseConfigDriver {
         appId = appId.replace(/^,\s+/, "");
         versionsName = versionsName.replace(/^,\s+/, "");
 
-        const data = await this.runSQL<EnvironmentJoinVersion[]>({
+        return await this.runSQL<EnvironmentJoinVersion[]>({
             sql: `SELECT environments.appId as appId, environments.name as environmentName , versions.name as version , 
                   environments.updatedAt as envUpdatedAt, versions.updatedAt as versionsUpdatedAt FROM environments
                   LEFT JOIN versions
@@ -103,7 +100,6 @@ export class MySQLConfigDriver extends BaseConfigDriver {
                   WHERE environments.appId in (?) AND environments.name in (?) AND versions.name in (?)`,
             queryParams: [appId, environmentName, versionsName],
         });
-        return data;
     }
 
     async pollConfigChanges() {
