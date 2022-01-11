@@ -9,7 +9,7 @@ export class ConfigService {
 
     constructor(driver: string) {
         this.driver = getConfigDriver(driver);
-        cron.schedule("*/3 * * * * *", async () => {
+        cron.schedule("*/10 * * * * *", async () => {
             await this.driver.pollConfigChanges();
         });
     }
@@ -20,7 +20,7 @@ export class ConfigService {
             console.log("cache hit for key: " + key);
             return this.driver.loadedConfigs.get(this.driver.keyMaker(params)).get(key);
         }
-        const versionConfig = await this.driver.getVersionConfig(env, version);
+        const versionConfig = await this.driver.getVersionConfig(appId, env, version);
         const environmentConfig = await this.driver.getEnvironmentDefaultConfig(appId, env);
         const config = merge(environmentConfig, versionConfig);
         this.driver.loadedConfigs.set(this.driver.keyMaker(params), new Map(Object.entries(config)));

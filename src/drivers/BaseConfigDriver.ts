@@ -19,7 +19,7 @@ export class BaseConfigDriver {
         console.log(appId + environmentName);
     }
 
-    async getVersionConfig(env: string, version: string) {
+    async getVersionConfig(appId: string, env: string, version: string) {
         console.log(env + version);
     }
 
