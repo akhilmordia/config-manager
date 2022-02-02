@@ -103,6 +103,7 @@ export class MySQLConfigDriver extends BaseConfigDriver {
     }
 
     async pollConfigChanges() {
+        console.log("pollConfigChanges called " + new Date());
         try {
             let data = await this.getAllConfigs();
             for (let index in data) {
