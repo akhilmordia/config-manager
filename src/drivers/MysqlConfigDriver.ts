@@ -19,7 +19,7 @@ export class MySQLConfigDriver extends BaseConfigDriver {
 
     async runSQL<T>(input: {
         sql: string;
-        queryParams?: (string | number | boolean)[];
+        queryParams?: (string | number | boolean | string[])[];
         timeout?: number;
         connection?: string;
     }): Promise<T> {
@@ -77,28 +77,35 @@ export class MySQLConfigDriver extends BaseConfigDriver {
     }
 
     async getAllConfigs() {
+        // console.log("Loaded: ", this.loadedConfigs);
+        if (this.loadedConfigs.size === 0) {
+            return [];
+        }
         let keys = this.loadedConfigs.keys();
-        let environmentName = "";
-        let appId = "";
-        let versionsName = "";
+
+        let envs: string[] = [];
+        let appIds: string[] = [];
+        let versions: string[] = [];
 
         for (const value of keys) {
+            //todo: validations are missing. Query might break.
             let obj: ConfigQueryParam = this.keySplitter(value, "_");
-            environmentName = environmentName + ", " + obj.env;
-            appId = appId + ", " + obj.appId;
-            versionsName = versionsName + ", " + obj.version;
+            envs.push(obj.env);
+            appIds.push(obj.appId);
+            versions.push(obj.version);
         }
-        environmentName = environmentName.replace(/^,\s+/, "");
-        appId = appId.replace(/^,\s+/, "");
-        versionsName = versionsName.replace(/^,\s+/, "");
 
+        let sql = `
+        SELECT environments.appId as appId, environments.name as environmentName, versions.name as version, 
+        environments.updatedAt as envUpdatedAt, versions.updatedAt as versionsUpdatedAt FROM environments
+        LEFT JOIN versions
+        ON versions.environmentId = environments.id
+        WHERE environments.appId in (?) AND environments.name in (?) AND versions.name in (?)`;
+
+        // console.log(sql);
         return await this.runSQL<EnvironmentJoinVersion[]>({
-            sql: `SELECT environments.appId as appId, environments.name as environmentName , versions.name as version , 
-                  environments.updatedAt as envUpdatedAt, versions.updatedAt as versionsUpdatedAt FROM environments
-                  LEFT JOIN versions
-                  ON versions.environmentId = environments.id
-                  WHERE environments.appId in (?) AND environments.name in (?) AND versions.name in (?)`,
-            queryParams: [appId, environmentName, versionsName],
+            sql: sql,
+            queryParams: [appIds, envs, versions],
         });
     }
 
@@ -106,6 +113,7 @@ export class MySQLConfigDriver extends BaseConfigDriver {
         console.log("pollConfigChanges called " + new Date());
         try {
             let data = await this.getAllConfigs();
+            // console.log("All Config: ", data);
             for (let index in data) {
                 let key = this.keyMaker({
                     appId: data[index].appId.toString(),
