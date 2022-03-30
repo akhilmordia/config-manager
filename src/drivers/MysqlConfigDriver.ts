@@ -82,7 +82,7 @@ export class MySQLConfigDriver extends BaseConfigDriver {
             return [];
         }
         let keys = this.loadedConfigs.keys();
-
+        // console.log({ keys });
         let envs: string[] = [];
         let appIds: string[] = [];
         let versions: string[] = [];
@@ -120,6 +120,9 @@ export class MySQLConfigDriver extends BaseConfigDriver {
                     env: data[index].environmentName.toString(),
                     version: data[index].version.toString(),
                 });
+                if (!this.loadedConfigs.has(key)) {
+                    continue;
+                }
                 let configData = this.loadedConfigs.get(key);
                 // console.log(key, configData);
                 let configEnvUpdatedAt = new Date(configData.get("envUpdatedAt").toString()).getTime();
